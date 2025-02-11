@@ -4,10 +4,10 @@ import json
 import pandas as pd
 
 def getTDCareer(df_length_limit = 100):
-    # 请求的目标 URL
+    # Target URL for the request
     url = "https://td.wd3.myworkdayjobs.com/wday/cxs/td/TD_Bank_Careers/jobs"
 
-    # 请求头（headers）
+    # Request headers
     headers = {
         "accept": "application/json",
         "accept-language": "en-US",
@@ -25,7 +25,7 @@ def getTDCareer(df_length_limit = 100):
         "x-calypso-csrf-token": "c8e70fbb-96e9-4b1b-b215-69138ac98da9"
     }
 
-    # Cookie 信息，注意这里将原始 Cookie 字符串拆分为字典格式
+    # Cookie information, note that the original cookie string is split into dictionary format
     cookies = {
         "__cflb": "02DiuJFb1a2FCfph91kR4Zp9F5cQ8FdpESYHmyiYqof9E",
         "PLAY_SESSION": "8bcb8c9bde5bb5bedf7c528003000485031f0b10-td_pSessionId=i7nr25vbbk8ssr6kvu0uk6c437&instance=vps-prod-wohip0zt.prod-vps.pr502.cust.dub.wd",
@@ -39,7 +39,7 @@ def getTDCareer(df_length_limit = 100):
         "CALYPSO_CSRF_TOKEN": "c8e70fbb-96e9-4b1b-b215-69138ac98da9"
     }
 
-    # POST 请求提交的数据（JSON 格式）
+    # Data submitted by POST request (in JSON format)
     payload = {
         "appliedFacets": {},
         "limit": 20,
@@ -47,21 +47,21 @@ def getTDCareer(df_length_limit = 100):
         "searchText": ""
     }
 
-    # 初始化 offset
+    # Initialize offset
     offset = 0
     all_data = []
 
     while offset < df_length_limit:
-        # 更新 payload 中的 offset
+        # Update offset in payload
         payload['offset'] = offset
 
-        # 发送 POST 请求
+        # Send POST request
         response = requests.post(url, headers=headers, cookies=cookies, json=payload)
         
-        # 解析响应内容
+        # Parse response content
         data = response.json()
         
-        # 提取所需字段
+        # Extract required fields
         job_postings = data.get('jobPostings', [])
         if not job_postings:
             break
@@ -76,14 +76,15 @@ def getTDCareer(df_length_limit = 100):
                 'bulletFields': job.get('bulletFields')
             })
         
-        # 增加 offset
+        # Increase offset
         offset += 20
 
-    # 转换为 DataFrame
+    # Convert to DataFrame
     df = pd.DataFrame(all_data)
     return df
 
 # %%
-getTDCareer(df_length_limit = 100)
+if __name__=="__main__":
+    df = getTDCareer(df_length_limit = 100)
 # %%
 
